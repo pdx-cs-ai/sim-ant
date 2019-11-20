@@ -27,11 +27,11 @@ class Ant(object):
         self.facing = random.randrange(4)
 
     def move(self):
-        rel_dirs = rotate_left(directions, self.facing)
 
-        def rel_loc(d):
+        def rel_loc(d0):
             r, c = self.loc
-            dr, dc = rel_dirs[d]
+            d = (d0 + self.facing) % 4
+            dr, dc = directions[d]
             return (r + dr, c + dc)
 
         scores = [0] * 4
@@ -40,11 +40,16 @@ class Ant(object):
             m = maze[p]
             if m == '.':
                 scores[d] = 1
+        
+        scores[0] *= 8
+        scores[1] *= 5
+        scores[3] *= 5
 
         i = random.randrange(sum(scores))
         for d in range(4):
             if i < scores[d]:
                 self.loc = rel_loc(d)
+                self.facing = (self.facing + d) % 4
                 return
             i -= scores[d]
         assert False
@@ -95,7 +100,7 @@ def render():
 
 render()
 for _ in range(100):
-    time.sleep(0.05)
+    time.sleep(0.1)
     for a in ants:
         a.move()
     render()
