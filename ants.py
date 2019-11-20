@@ -16,6 +16,8 @@ pheromones = defaultdict(lambda: 0)
 
 ph_decay = 0.95
 
+carry_decay = 0.95
+
 directions = [(1, 0), (0, -1), (-1, 0), (0, 1)]
 
 def rotate_left(a, n):
@@ -27,6 +29,7 @@ class Ant(object):
         self.loc = loc
         self.carrying = False
         self.facing = random.randrange(4)
+        self.ph = dmaze**2
 
     def move(self):
 
@@ -37,7 +40,7 @@ class Ant(object):
             return (r + dr, c + dc)
 
         scores = [0] * 4
-        bumps = [80, 50, 0, 50]
+        bumps = [20, 5, 0, 5]
         for d in range(4):
             p = rel_loc(d)
             m = maze[p]
@@ -53,7 +56,8 @@ class Ant(object):
         for d in range(4):
             if i < scores[d]:
                 if self.carrying:
-                    pheromones[self.loc] += 1
+                    pheromones[self.loc] += self.carrying
+                    self.ph = int(self.ph * carry_decay)
                 new_loc = rel_loc(d)
                 new_facing = (self.facing + d) % 4
                 if new_loc == (1, 1):
