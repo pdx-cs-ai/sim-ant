@@ -48,8 +48,16 @@ class Ant(object):
         i = random.randrange(sum(scores))
         for d in range(4):
             if i < scores[d]:
-                self.loc = rel_loc(d)
-                self.facing = (self.facing + d) % 4
+                if self.carrying:
+                    pheromones[self.loc] += 1
+                new_loc = rel_loc(d)
+                new_facing = (self.facing + d) % 4
+                if new_loc == (1, 1):
+                    self.carrying = False
+                if new_loc == (dmaze-2, dmaze-2):
+                    self.carrying = True
+                self.loc = new_loc
+                self.facing = new_facing
                 return
             i -= scores[d]
         assert False
@@ -95,12 +103,18 @@ def render():
                 if ph > 1:
                     print(ds[min(ph - 1, 8)], end="")
                     continue
+            if p == (1, 1):
+                print("O", end="")
+                continue
+            if p == (dmaze-2, dmaze-2):
+                print("*", end="")
+                continue
             print(maze[p], end="")
         print()
 
 render()
-for _ in range(100):
-    time.sleep(0.1)
+for _ in range(500):
+    time.sleep(0.05)
     for a in ants:
         a.move()
     render()
