@@ -14,6 +14,8 @@ maze = Maze(dmaze)
 
 pheromones = defaultdict(lambda: 0)
 
+ph_decay = 0.95
+
 directions = [(1, 0), (0, -1), (-1, 0), (0, 1)]
 
 def rotate_left(a, n):
@@ -66,12 +68,19 @@ class Ant(object):
 
 ants = [Ant((1, 1)) for _ in range(10)]
 
-def max_pheromone():
+def adjust_pheromones():
     m = 0
     for r in range(dmaze):
         for c in range(dmaze):
             m = max(m, pheromones[(r, c)])
-    return m
+    if m == 0:
+        return
+
+    for r in range(dmaze):
+        for c in range(dmaze):
+            ph = pheromones[(r, c)]
+            ph = int(ph_decay * 10 * ph / m)
+            pheromones[(r,c)] = ph
 
 def find_ants():
     result = dict()
@@ -91,7 +100,6 @@ def clear_screen():
 
 def render():
     clear_screen()
-    pmx = max_pheromone()
     als = find_ants()
     for r in range(dmaze):
         for c in range(dmaze):
@@ -101,9 +109,9 @@ def render():
                 continue
             if pheromones[p] > 0:
                 ds = list(".123456789")
-                ph = 10 * pheromones[p] // pmx
+                ph = pheromones[p]
                 if ph > 1:
-                    print(ds[min(ph - 1, 9)], end="")
+                    print(ds[min(ph, 9)], end="")
                     continue
             if p == (1, 1):
                 print("O", end="")
@@ -119,4 +127,5 @@ for _ in range(500):
     time.sleep(0.05)
     for a in ants:
         a.move()
+    adjust_pheromones()
     render()
