@@ -16,9 +16,9 @@ maze = Maze(dmaze)
 
 pheromones = defaultdict(lambda: 0)
 
-ph_decay = 0.95
+ph_decay = 0.99
 
-carry_decay = 0.95
+carry_decay = 1.0
 
 directions = [(1, 0), (0, -1), (-1, 0), (0, 1)]
 
@@ -31,7 +31,7 @@ class Ant(object):
         self.loc = loc
         self.carrying = False
         self.facing = random.randrange(4)
-        self.ph = dmaze**2
+        self.ph = 0
 
     def move(self):
 
@@ -42,7 +42,7 @@ class Ant(object):
             return (r + dr, c + dc)
 
         scores = [0] * 4
-        bumps = [20, 5, 0, 5]
+        bumps = [30, 10, 0, 10]
         for d in range(4):
             p = rel_loc(d)
             m = maze[p]
@@ -57,15 +57,15 @@ class Ant(object):
         i = random.randrange(sum(scores))
         for d in range(4):
             if i < scores[d]:
-                if self.carrying:
-                    pheromones[self.loc] += self.carrying
-                    self.ph = int(self.ph * carry_decay)
+                pheromones[self.loc] += self.ph
+                self.ph = int(self.ph * carry_decay)
                 new_loc = rel_loc(d)
                 new_facing = (self.facing + d) % 4
                 if new_loc == (1, 1):
                     self.carrying = False
                 if new_loc == (dmaze-2, dmaze-2):
                     self.carrying = True
+                    self.ph = 20
                 self.loc = new_loc
                 self.facing = new_facing
                 return
