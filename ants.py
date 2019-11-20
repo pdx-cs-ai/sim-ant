@@ -8,6 +8,8 @@ from maze import Maze
 
 dmaze = 11
 
+frame_rate = 10
+
 pfood = (dmaze - 1, dmaze - 1)
 
 maze = Maze(dmaze)
@@ -128,7 +130,7 @@ def render():
 
 render()
 for _ in range(500):
-    time.sleep(0.05)
+    time.sleep(1.0 / frame_rate)
     for a in ants:
         a.move()
     adjust_pheromones()
