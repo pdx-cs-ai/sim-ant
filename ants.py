@@ -6,7 +6,7 @@ import time
 
 from maze import Maze
 
-dmaze = 21
+dmaze = 11
 
 pfood = (dmaze - 1, dmaze - 1)
 
@@ -35,15 +35,17 @@ class Ant(object):
             return (r + dr, c + dc)
 
         scores = [0] * 4
+        bumps = [80, 50, 0, 50]
         for d in range(4):
             p = rel_loc(d)
             m = maze[p]
             if m == '.':
-                scores[d] = 1
+                scores[d] = 10 + pheromones[p] + bumps[d]
         
-        scores[0] *= 8
-        scores[1] *= 5
-        scores[3] *= 5
+        def bump_scores(d, bump):
+            nonlocal scores
+            if scores[d] > 0:
+                scores[d] += bump
 
         i = random.randrange(sum(scores))
         for d in range(4):
@@ -64,12 +66,12 @@ class Ant(object):
 
 ants = [Ant((1, 1)) for _ in range(10)]
 
-def count_pheromones():
-    t = 0
+def max_pheromone():
+    m = 0
     for r in range(dmaze):
         for c in range(dmaze):
-            t += pheromones[(r, c)]
-    return t
+            m = max(m, pheromones[(r, c)])
+    return m
 
 def find_ants():
     result = dict()
@@ -89,7 +91,7 @@ def clear_screen():
 
 def render():
     clear_screen()
-    pcs = count_pheromones()
+    pmx = max_pheromone()
     als = find_ants()
     for r in range(dmaze):
         for c in range(dmaze):
@@ -98,10 +100,10 @@ def render():
                 print(als[p], end="")
                 continue
             if pheromones[p] > 0:
-                ds = list("123456789")
-                ph = pheromones[p] // pcs
+                ds = list(".123456789")
+                ph = 10 * pheromones[p] // pmx
                 if ph > 1:
-                    print(ds[min(ph - 1, 8)], end="")
+                    print(ds[min(ph - 1, 9)], end="")
                     continue
             if p == (1, 1):
                 print("O", end="")
