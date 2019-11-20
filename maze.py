@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import random
 
 # An n-by-n maze. n must be odd and greater than 3. Cells
@@ -49,6 +47,10 @@ class Maze(object):
         self.n = n
         self.maze = maze
 
+    # Index the maze.
+    def __getitem__(self, p):
+        return self.maze[p]
+
     # Render a maze
     def __str__(self):
         result = ''
@@ -62,5 +64,3 @@ class Maze(object):
             result += '\n'
         return result
 
-maze = Maze(25)
-print(maze)
