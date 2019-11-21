@@ -22,10 +22,6 @@ carry_decay = 1.0
 
 directions = [(1, 0), (0, -1), (-1, 0), (0, 1)]
 
-def rotate_left(a, n):
-    s = 4 - n
-    return a[s:] + a[:s]
-
 class Ant(object):
     def __init__(self, loc):
         self.loc = loc
@@ -49,20 +45,16 @@ class Ant(object):
             if m == '.':
                 scores[d] = 10 + pheromones[p] + bumps[d]
         
-        def bump_scores(d, bump):
-            nonlocal scores
-            if scores[d] > 0:
-                scores[d] += bump
-
-        i = random.randrange(sum(scores))
+        i = random.randrange(int(sum(scores)))
         for d in range(4):
             if i < scores[d]:
                 pheromones[self.loc] += self.ph
-                self.ph = int(self.ph * carry_decay)
+                self.ph = self.ph * carry_decay
                 new_loc = rel_loc(d)
                 new_facing = (self.facing + d) % 4
                 if new_loc == (1, 1):
                     self.carrying = False
+                    self.ph = 0
                 if new_loc == (dmaze-2, dmaze-2):
                     self.carrying = True
                     self.ph = 20
@@ -85,7 +77,7 @@ def adjust_pheromones():
     for r in range(dmaze):
         for c in range(dmaze):
             ph = pheromones[(r, c)]
-            ph = int(ph_decay * 10 * ph / m)
+            ph = ph_decay * 10 * ph / m
             pheromones[(r,c)] = ph
 
 def find_ants():
@@ -117,7 +109,7 @@ def render():
                 ds = list(".123456789")
                 ph = pheromones[p]
                 if ph > 1:
-                    print(ds[min(ph, 9)], end="")
+                    print(ds[min(int(ph), 9)], end="")
                     continue
             if p == (1, 1):
                 print("O", end="")
