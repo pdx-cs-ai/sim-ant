@@ -8,6 +8,9 @@ import time
 
 from maze import Maze
 
+# Number of ants.
+nants = 10
+
 # Size of the (square) maze in characters.
 # XXX Note that some of the tuning parameters should be a
 # function of maze size.
@@ -32,7 +35,7 @@ ph_decay = 0.1
 carry_decay = 0.01
 
 # Scoring bias for moving forward, left, back, right.
-bumps = [50, 30, 1, 30]
+bumps = [50, 20, 1, 20]
 for b in bumps:
     assert b > 0
 
@@ -114,7 +117,7 @@ class Ant(object):
         self.loc = new_loc
         self.facing = new_facing
 
-ants = [Ant(pnest) for _ in range(10)]
+ants = [Ant(pnest) for _ in range(nants)]
 
 def adjust_pheromones():
     for r in range(dmaze):
@@ -161,11 +164,15 @@ def render():
                 continue
             print(maze[p], end="")
         print()
-    print(ndelivered)
+    print(f"fetched {ndelivered}")
+    if nticks > 0:
+        print(f"fetched/sec {ndelivered / (nticks / frame_rate):.2}")
 
+nticks = 0
 render()
-for _ in range(500):
+while True:
     time.sleep(1.0 / frame_rate)
+    nticks += 1
     for a in ants:
         a.move()
     adjust_pheromones()
