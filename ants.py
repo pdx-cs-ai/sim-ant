@@ -24,12 +24,12 @@ pfood = (dmaze - 2, dmaze - 2)
 assert pnest != pfood
 
 # Fraction of pheromone decay per step.
-ph_decay = 0.05
+ph_decay = 0.1
 
 # Fraction of food-carried pheromone decay per step.
 # This causes an ant to emit less pheromone as it
 # wanders around with food being lost.
-carry_decay = 0.001
+carry_decay = 0.01
 
 # Scoring bias for moving forward, left, back, right.
 bumps = [50, 30, 1, 30]
