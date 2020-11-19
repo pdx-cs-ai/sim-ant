@@ -8,7 +8,7 @@ import random
 # the maze structure.
 class Maze(object):
     
-    def __init__(self, n, punctuated=0):
+    def __init__(self, n):
         assert n >= 4 and n % 2 == 1
         maze = dict()
 
@@ -53,14 +53,15 @@ class Maze(object):
 
     # Render a maze
     def __str__(self):
-        result = ''
+        result = list()
         for r in range(self.n):
+            row = ""
             for c in range(self.n):
                 s = self.maze.get((r, c))
                 if s == None:
-                    result += '?'
+                    row += '?'
                 else:
-                    result += s
-            result += '\n'
-        return result
+                    row += s
+            result.append(row)
+        return '\n'.join(result)
 
